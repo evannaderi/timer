@@ -136,10 +136,10 @@ class TimerApp:
         self.add_custom_timer_button = tk.Button(self.add_timer_frame, text="Add Custom Timer", command=self.add_custom_timer)
         self.add_custom_timer_button.pack(side=tk.LEFT, padx=5)
 
-        self.add_eye_timer_button = tk.Button(self.add_timer_frame, text="Add Eye Care Timer", command=self.add_eye_timer)
+        self.add_eye_timer_button = tk.Button(self.add_timer_frame, text="Add EC Timer", command=self.add_eye_timer)
         self.add_eye_timer_button.pack(side=tk.LEFT, padx=5)
 
-        self.add_pomodoro_timer_button = tk.Button(self.add_timer_frame, text="Add Pomodoro Timer", command=self.add_pomodoro_timer)
+        self.add_pomodoro_timer_button = tk.Button(self.add_timer_frame, text="Add P Timer", command=self.add_pomodoro_timer)
         self.add_pomodoro_timer_button.pack(side=tk.LEFT, padx=5)
 
     def add_custom_timer(self):
@@ -161,11 +161,11 @@ class TimerApp:
                 self.timers.append(new_timer)
 
     def add_eye_timer(self):
-        new_timer = Timer(self.master, 20 * 60, "Eye Care Timer", alternate_duration=20)
+        new_timer = Timer(self.master, 20 * 60, "EC Timer", alternate_duration=20)
         self.timers.append(new_timer)
 
     def add_pomodoro_timer(self):
-        new_timer = Timer(self.master, 25 * 60, "Pomodoro Timer", alternate_duration=5 * 60)
+        new_timer = Timer(self.master, 25 * 60, "P Timer", alternate_duration=5 * 60)
         self.timers.append(new_timer)
 
 if __name__ == "__main__":
