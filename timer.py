@@ -15,7 +15,7 @@ class Timer:
         self.alternate_duration = alternate_duration
         self.is_alternate = False
         self.sound_on = True
-        self.auto_repeat = False
+        self.auto_repeat = True
 
         self.frame = tk.Frame(master)
         self.frame.pack(pady=5)
