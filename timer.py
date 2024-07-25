@@ -6,7 +6,8 @@ import pync
 import sqlite3
 
 class Timer:
-    def __init__(self, master, duration, name, alternate_duration=None, id=None):
+    def __init__(self, app, master, duration, name, alternate_duration=None, id=None):
+        self.app = app
         self.master = master
         self.id = id
         self.initial_duration = duration
@@ -105,7 +106,7 @@ class Timer:
                 if new_alternate:
                     self.alternate_duration = new_alternate
             self.reset_timer()
-            self.master.update_timer_in_db(self)
+            self.app.update_timer_in_db(self)
 
     def toggle_sound(self):
         self.sound_on = self.sound_var.get()
@@ -114,7 +115,7 @@ class Timer:
         self.auto_repeat = self.repeat_var.get()
 
     def delete(self):
-        self.master.delete_timer_from_db(self)
+        self.app.delete_timer_from_db(self)
         self.frame.destroy()
 
     @staticmethod
@@ -163,7 +164,7 @@ class TimerApp:
         cursor = self.conn.cursor()
         cursor.execute("SELECT * FROM timers")
         for row in cursor.fetchall():
-            new_timer = Timer(self.master, row[2], row[1], alternate_duration=row[3], id=row[0])
+            new_timer = Timer(self, self.master, row[2], row[1], alternate_duration=row[3], id=row[0])
             self.timers.append(new_timer)
 
     def add_custom_timer(self):
@@ -194,7 +195,7 @@ class TimerApp:
                        (name, duration, alternate_duration))
         self.conn.commit()
         timer_id = cursor.lastrowid
-        new_timer = Timer(self.master, duration, name, alternate_duration=alternate_duration, id=timer_id)
+        new_timer = Timer(self, self.master, duration, name, alternate_duration=alternate_duration, id=timer_id)
         self.timers.append(new_timer)
 
     def update_timer_in_db(self, timer):
