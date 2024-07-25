@@ -36,7 +36,7 @@ class Timer:
         self.sound_check = tk.Checkbutton(self.frame, text="Sound", variable=self.sound_var, command=self.toggle_sound)
         self.sound_check.pack(side=tk.LEFT)
 
-        self.repeat_var = tk.BooleanVar(value=False)
+        self.repeat_var = tk.BooleanVar(value=True)
         self.repeat_check = tk.Checkbutton(self.frame, text="Auto-repeat", variable=self.repeat_var, command=self.toggle_repeat)
         self.repeat_check.pack(side=tk.LEFT)
 
