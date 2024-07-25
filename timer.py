@@ -3,10 +3,12 @@ from tkinter import simpledialog, messagebox, ttk
 import time
 import os
 import pync
+import sqlite3
 
 class Timer:
-    def __init__(self, master, duration, name, alternate_duration=None):
+    def __init__(self, master, duration, name, alternate_duration=None, id=None):
         self.master = master
+        self.id = id
         self.initial_duration = duration
         self.duration = duration
         self.time_left = duration
@@ -103,6 +105,7 @@ class Timer:
                 if new_alternate:
                     self.alternate_duration = new_alternate
             self.reset_timer()
+            self.master.update_timer_in_db(self)
 
     def toggle_sound(self):
         self.sound_on = self.sound_var.get()
@@ -111,6 +114,7 @@ class Timer:
         self.auto_repeat = self.repeat_var.get()
 
     def delete(self):
+        self.master.delete_timer_from_db(self)
         self.frame.destroy()
 
     @staticmethod
@@ -142,6 +146,26 @@ class TimerApp:
         self.add_pomodoro_timer_button = tk.Button(self.add_timer_frame, text="Add P Timer", command=self.add_pomodoro_timer)
         self.add_pomodoro_timer_button.pack(side=tk.LEFT, padx=5)
 
+        self.conn = sqlite3.connect('timers.db')
+        self.create_table()
+        self.load_timers()
+
+    def create_table(self):
+        cursor = self.conn.cursor()
+        cursor.execute('''CREATE TABLE IF NOT EXISTS timers
+                          (id INTEGER PRIMARY KEY,
+                           name TEXT,
+                           duration INTEGER,
+                           alternate_duration INTEGER)''')
+        self.conn.commit()
+
+    def load_timers(self):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM timers")
+        for row in cursor.fetchall():
+            new_timer = Timer(self.master, row[2], row[1], alternate_duration=row[3], id=row[0])
+            self.timers.append(new_timer)
+
     def add_custom_timer(self):
         name = simpledialog.askstring("New Timer", "Enter a name for this timer:", parent=self.master)
         if name is None or name.strip() == "":
@@ -154,19 +178,36 @@ class TimerApp:
                 alternate_duration = simpledialog.askinteger("New Timer", "Enter alternate duration in seconds:", 
                                                              parent=self.master, minvalue=1)
                 if alternate_duration is not None:
-                    new_timer = Timer(self.master, duration, name, alternate_duration=alternate_duration)
-                    self.timers.append(new_timer)
+                    self.add_timer_to_db(name, duration, alternate_duration)
             else:
-                new_timer = Timer(self.master, duration, name)
-                self.timers.append(new_timer)
+                self.add_timer_to_db(name, duration)
 
     def add_eye_timer(self):
-        new_timer = Timer(self.master, 20 * 60, "EC Timer", alternate_duration=20)
-        self.timers.append(new_timer)
+        self.add_timer_to_db("EC Timer", 20 * 60, 20)
 
     def add_pomodoro_timer(self):
-        new_timer = Timer(self.master, 25 * 60, "P Timer", alternate_duration=5 * 60)
+        self.add_timer_to_db("P Timer", 25 * 60, 5 * 60)
+
+    def add_timer_to_db(self, name, duration, alternate_duration=None):
+        cursor = self.conn.cursor()
+        cursor.execute("INSERT INTO timers (name, duration, alternate_duration) VALUES (?, ?, ?)",
+                       (name, duration, alternate_duration))
+        self.conn.commit()
+        timer_id = cursor.lastrowid
+        new_timer = Timer(self.master, duration, name, alternate_duration=alternate_duration, id=timer_id)
         self.timers.append(new_timer)
+
+    def update_timer_in_db(self, timer):
+        cursor = self.conn.cursor()
+        cursor.execute("UPDATE timers SET duration=?, alternate_duration=? WHERE id=?",
+                       (timer.duration, timer.alternate_duration, timer.id))
+        self.conn.commit()
+
+    def delete_timer_from_db(self, timer):
+        cursor = self.conn.cursor()
+        cursor.execute("DELETE FROM timers WHERE id=?", (timer.id,))
+        self.conn.commit()
+        self.timers.remove(timer)
 
 if __name__ == "__main__":
     root = tk.Tk()
