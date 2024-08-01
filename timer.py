@@ -22,6 +22,10 @@ class Timer:
 
         self.frame = tk.Frame(master)
         self.frame.pack(pady=5)
+        
+        # Add a label for the timer name
+        self.name_label = tk.Label(self.frame, text=self.name, font=("Arial", 12, "bold"))
+        self.name_label.pack(side=tk.TOP)
 
         self.label = tk.Label(self.frame, text=self.format_time(self.time_left), font=("Arial", 24))
         self.label.pack(side=tk.LEFT, padx=5)
@@ -107,6 +111,8 @@ class Timer:
                     self.alternate_duration = new_alternate
             self.reset_timer()
             self.app.update_timer_in_db(self)
+            # Update the name label
+            self.name_label.config(text=self.name)
 
     def toggle_sound(self):
         self.sound_on = self.sound_var.get()
