@@ -19,6 +19,9 @@ class Timer:
         self.is_alternate = False
         self.sound_on = True
         self.auto_repeat = True
+        
+        self.work_color = "red"
+        self.break_color = "green"
 
         self.frame = tk.Frame(master)
         self.frame.pack(pady=5)
@@ -27,7 +30,8 @@ class Timer:
         self.name_label = tk.Label(self.frame, text=self.name, font=("Arial", 12, "bold"))
         self.name_label.pack(side=tk.TOP)
 
-        self.label = tk.Label(self.frame, text=self.format_time(self.time_left), font=("Arial", 24))
+        self.label = tk.Label(self.frame, text=self.format_time(self.time_left), font=("Arial", 24), 
+                              bg=self.work_color if not self.is_alternate else self.break_color)
         self.label.pack(side=tk.LEFT, padx=5)
 
         self.start_stop_button = tk.Button(self.frame, text="Start", command=self.start_stop)
@@ -49,6 +53,7 @@ class Timer:
 
         self.delete_button = tk.Button(self.frame, text="Delete", command=self.delete)
         self.delete_button.pack(side=tk.LEFT)
+        
 
     def start_stop(self):
         if self.is_running:
@@ -79,6 +84,8 @@ class Timer:
         if self.alternate_duration:
             self.is_alternate = not self.is_alternate
             self.time_left = self.alternate_duration if self.is_alternate else self.duration
+            self.label.config(bg=self.break_color if self.is_alternate else self.work_color)
+            self.label.config(text=self.format_time(self.time_left), bg=self.work_color)
         else:
             self.time_left = self.duration
         
