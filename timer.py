@@ -67,7 +67,7 @@ class Timer:
     def countdown(self):
         if self.is_running:
             if self.time_left <= 0:
-                self.label.config(text="Time's up!")
+                self.label.config(text="F")
                 self.notify()
                 self.switch_duration()
             else:
@@ -76,7 +76,7 @@ class Timer:
                 self.master.after(1000, self.countdown)
 
     def notify(self):
-        pync.notify(f"{self.name}: Time's up!", title="Timer Notification")
+        pync.notify(f"{self.name}: F", title="TN")
         if self.sound_on:
             os.system('afplay /System/Library/Sounds/Glass.aiff')
 
