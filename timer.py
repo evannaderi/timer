@@ -197,10 +197,10 @@ class TimerApp:
                 self.add_timer_to_db(name, duration)
 
     def add_eye_timer(self):
-        self.add_timer_to_db("EC Timer", 20 * 60, 20)
+        self.add_timer_to_db("ECT", 20 * 60, 20)
 
     def add_pomodoro_timer(self):
-        self.add_timer_to_db("P Timer", 25 * 60, 5 * 60)
+        self.add_timer_to_db("PT", 25 * 60, 5 * 60)
 
     def add_timer_to_db(self, name, duration, alternate_duration=None):
         cursor = self.conn.cursor()
